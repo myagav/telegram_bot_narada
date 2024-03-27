@@ -1,5 +1,5 @@
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
-from telegram.constants import ChatAction
+from telegram.constants import ChatAction, ChatMemberStatus
 from telegram import Update
 import random
 from config import TOKEN
@@ -13,8 +13,9 @@ async def start(update, context):
 async def all_members(update, context):
     chat_id = update.message.chat_id
     members = MEMBER_IDS
-    mention_strings = [f"tg://user?id={member}" for member in members]
-    custom_names = [generate_custom_name() for _ in members]
+    members_in_chat = [await update.message.chat.get_member(member) for member in members]
+    mention_strings = [f"tg://user?id={member.user.id}" for member in members_in_chat if not member.status == ChatMemberStatus.LEFT]
+    custom_names = [generate_custom_name() for _ in members_in_chat]
     mention_strings = list(map(lambda mention, names: f"[{names}]({mention}),", mention_strings, custom_names))
     await context.bot.send_chat_action(chat_id, action=ChatAction.TYPING)
     await update.message.reply_text(' '.join(mention_strings), parse_mode="MarkdownV2")
