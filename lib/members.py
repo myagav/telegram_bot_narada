@@ -5,11 +5,13 @@ from lib.meta import Singleton
 
 
 class MembersManager(metaclass=Singleton):
+    member_ids = set()
+
     def __init__(self, *, config=None):
         if config is None:
             raise ManagerConfigurationError("Manager config wasn't provided")
         self.__members_config_path = config.pop("members_path")
-        self.member_ids
+        self._read_members()
 
     def update_member_id(self, member_id):
         if member_id not in self.member_ids:
