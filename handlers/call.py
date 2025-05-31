@@ -24,7 +24,10 @@ async def members_router(update, context):
         )
     )
     await context.bot.send_chat_action(chat_id, action=ChatAction.TYPING)
-    await update.message.reply_text(" ".join(mention_strings), parse_mode="MarkdownV2")
+    await update.message.reply_text(
+        " ".join(mention_strings) if mention_strings else "немає кого відмічати",
+        parse_mode="MarkdownV2",
+    )
 
 
 async def get_chat_members(update, members):
