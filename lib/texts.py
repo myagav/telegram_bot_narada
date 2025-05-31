@@ -109,7 +109,7 @@ class TextManager(Manager):
         return Text(**text)
 
     def add_text(self, text: str, t_type: TextT):
-        max_id = int(max(self._raw_texts.keys()))
+        max_id = int(max([int(id_) for id_ in self._raw_texts.keys()]))
         new_id = max_id + 1
         text_dc = Text(
             text=text,
@@ -140,4 +140,3 @@ class TextManager(Manager):
     def _write_texts(self):
         with open(self.__texts_config_path, "w") as file:
             file.write(json.dumps(self._raw_texts))
-
