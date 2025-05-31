@@ -1,5 +1,5 @@
-from lib.members import update_member_id
+from lib.members import MembersManager
 
 
 async def telemetry_router(update, context):
-    update_member_id(update.message.from_user.id)
+    MembersManager().update_member_id(update.message.from_user.id)
