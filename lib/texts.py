@@ -1,25 +1,10 @@
+from typing import List, Dict
 import random
-
-# Список цитат студентів
-_quotes = [
-    "я повісився щоб не йти на пару",
-    "я не хочу просинатись та йти до медведєвої",
-    "що робити коли тебе грузе Голев?",
-    "я не хочу робити роботу",
-    "мамі своєї покажеш",
-    "тобі більше всіх треба?",
-    "навіщо ти мене ображаєш? В школі не навчили?",
-    "яка пара в мене бізнеси",
-    "допомагаємо та не кидаємо в біде",
-]
-_jokes = [
-    "топ 2 знаки зодіаку. 1 - близнюки. 2 - 11 вересня",
-    "переходила бабка не на той світ а опинилась на тому",
-    "я точно все здам",
-    "негри кинули пити й ти зможеш",
-    "мені вистачає стипендії на життя",
-    "я точно все здам голеву",
-]
+import json
+from dataclasses import asdict
+from lib.meta import Manager
+from lib.exceptions import ManagerReadOnlyAttributteError
+from lib.types import Text, TextT
 
 _adjectives = [
     "страшний",
@@ -67,6 +52,14 @@ _nouns = [
 ]
 
 
+def get_random_joke():
+    return random.choice(TextManager().jokes)
+
+
+def get_random_quote():
+    return random.choice(TextManager().quotes)
+
+
 def generate_custom_name():
     adjective = random.choice(_adjectives)
     noun = random.choice(
@@ -75,9 +68,71 @@ def generate_custom_name():
     return f"{adjective} {noun}"
 
 
-def get_random_joke():
-    return random.choice(_jokes)
+class TextManager(Manager):
+    _texts: List[Text]
+    _raw_texts: Dict
 
+    def __init__(self, *, config=None):
+        super().__init__(config=config)
+        self.__texts_config_path = config.pop("texts_path")
+        # end
+        self._read_texts()
 
-def get_random_quote():
-    return random.choice(_quotes)
+    @property
+    def jokes(self):
+        """The jokes property."""
+        jokes = [joke for joke in self._texts if joke.type == "joke"]
+        return jokes
+
+    @jokes.setter
+    def set_jokes(self, value):
+        raise ManagerReadOnlyAttributteError(
+            "Writing to read only attribute 'jokes' is not allowed"
+        )
+
+    @property
+    def quotes(self):
+        """The jokes property."""
+        quotes = [quote for quote in self._texts if quote.type == "quote"]
+        return quotes
+
+    @jokes.setter
+    def set_quotes(self, value):
+        raise ManagerReadOnlyAttributteError(
+            "Writing to read only attribute 'quotes' is not allowed"
+        )
+
+    def get_text(self, text_id: int):
+        text = self.__raw_texts[text_id]
+        return Text(**text)
+
+    def add_text(self, text: str, t_type: TextT):
+        max_id = max(self._raw_texts.keys())
+        new_id = max_id + 1
+        text_dc = Text(
+            text=text,
+            type=t_type,
+            id=new_id,
+        )
+        self._texts.append(text_dc)
+        self._raw_texts[new_id] = asdict(text_dc)
+
+    def remove_text(self, text_id: int):
+        del self._raw_texts[text_id]
+        self._write_texts()
+        self._read_texts()
+
+    def _read_texts(self):
+        """Initialises self._texts and self._raw_texts in place"""
+        with open(self.__texts_config_path, "r") as members_file:
+            texts_mapping = json.load(members_file)
+
+        texts_dcs = []
+        for text in texts_mapping:
+            texts_dcs.append(Text(**text))
+        self._texts = texts_dcs
+        self._raw_texts = texts_mapping
+
+    def _write_texts(self):
+        with open(self.__texts_config_path, "w") as file:
+            file.write(json.dumps(self._raw_texts))
