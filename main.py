@@ -10,6 +10,7 @@ from handlers import (
     telemetry_handler,
 )
 from lib.members import MembersManager
+from lib.texts import TextManager
 
 
 def main():
@@ -17,6 +18,7 @@ def main():
 
     # Singleton init
     MembersManager(config={"members_path": "./members.json"})
+    TextManager(config={"texts_path": "./texts.json"})
 
     # NOTE: Command handlers
     updater.add_handler(start_handler)

@@ -1,15 +1,13 @@
 import json
 
-from lib.exceptions import ManagerConfigurationError
-from lib.meta import Singleton
+from lib.meta import Manager
 
 
-class MembersManager(metaclass=Singleton):
+class MembersManager(Manager):
     member_ids = set()
 
     def __init__(self, *, config=None):
-        if config is None:
-            raise ManagerConfigurationError("Manager config wasn't provided")
+        super().__init__(config=config)
         self.__members_config_path = config.pop("members_path")
         self._read_members()
 
@@ -20,6 +18,7 @@ class MembersManager(metaclass=Singleton):
                 file.write(json.dumps(list(self.member_ids)))
 
     def _read_members(self):
+        """Initialises self.member_ids in place"""
         with open(self.__members_config_path, "r") as members_file:
             members_list = json.load(members_file)
         self.member_ids = set(members_list)
