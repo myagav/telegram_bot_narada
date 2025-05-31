@@ -53,7 +53,8 @@ _nouns = [
 
 
 def get_random_joke():
-    return random.choice(TextManager().jokes)
+    joke = random.choice(TextManager().jokes)
+    return joke.text
 
 
 def get_random_quote():
@@ -103,11 +104,11 @@ class TextManager(Manager):
         )
 
     def get_text(self, text_id: int):
-        text = self.__raw_texts[text_id]
+        text = self._raw_texts[text_id]
         return Text(**text)
 
     def add_text(self, text: str, t_type: TextT):
-        max_id = max(self._raw_texts.keys())
+        max_id = int(max(self._raw_texts.keys()))
         new_id = max_id + 1
         text_dc = Text(
             text=text,
@@ -116,6 +117,8 @@ class TextManager(Manager):
         )
         self._texts.append(text_dc)
         self._raw_texts[new_id] = asdict(text_dc)
+        self._write_texts()
+        self._read_texts()
 
     def remove_text(self, text_id: int):
         del self._raw_texts[text_id]
@@ -128,11 +131,12 @@ class TextManager(Manager):
             texts_mapping = json.load(members_file)
 
         texts_dcs = []
-        for text in texts_mapping:
-            texts_dcs.append(Text(**text))
+        for text_id in texts_mapping:
+            texts_dcs.append(Text(**texts_mapping[text_id]))
         self._texts = texts_dcs
         self._raw_texts = texts_mapping
 
     def _write_texts(self):
         with open(self.__texts_config_path, "w") as file:
             file.write(json.dumps(self._raw_texts))
+
