@@ -1,4 +1,5 @@
 from lib.texts import get_random_joke, TextManager
+from lib.utils import is_admin
 
 
 async def joke_router(update, context):
@@ -30,12 +31,18 @@ async def random_joke_action(update):
 
 
 async def add_joke_action(update, text: str):
+    if not is_admin(update.message.from_user.id):
+        await random_joke_action(update=update)
+
     tm = TextManager()
     tm.add_text(text=text, t_type="joke")
     await update.message.reply_text("жарт додано")
 
 
 async def list_joke_action(update):
+    if not is_admin(update.message.from_user.id):
+        await random_joke_action(update=update)
+
     tm = TextManager()
     responses = []
     responses.append("список жартів:\n")
@@ -46,6 +53,9 @@ async def list_joke_action(update):
 
 
 async def remove_joke_action(update, text_id: str):
+    if not is_admin(update.message.from_user.id):
+        await random_joke_action(update=update)
+
     tm = TextManager()
     try:
         text_to_remove = tm.get_text(text_id)
