@@ -26,7 +26,7 @@ async def quote_router(update, context):
             await error_quote_action(update=update)
 
 
-async def random_quote_action(update, context):
+async def random_quote_action(update):
     await update.message.reply_text(get_random_quote())
 
 
