@@ -1,0 +1,2 @@
+class ManagerConfigurationError(Exception):
+    pass
