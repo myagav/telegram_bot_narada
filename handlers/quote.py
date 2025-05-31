@@ -6,4 +6,4 @@ async def quote_router(update, context):
 
 
 async def random_quote_action(update, context):
-    await update.message.reply_text(get_random_quote)
+    await update.message.reply_text(get_random_quote())
