@@ -7,7 +7,7 @@ class MembersManager(Manager):
     member_ids = set()
 
     def __init__(self, *, config=None):
-        super().__init__(self, config=config)
+        super().__init__(config=config)
         self.__members_config_path = config.pop("members_path")
         self._read_members()
 
