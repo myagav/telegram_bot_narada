@@ -1,5 +1,5 @@
+from handlers.utils import is_admin
 from lib.texts import get_random_quote, TextManager
-from lib.utils import is_admin
 
 
 async def quote_router(update, context):

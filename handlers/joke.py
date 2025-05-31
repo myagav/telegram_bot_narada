@@ -1,5 +1,5 @@
+from handlers.utils import is_admin
 from lib.texts import get_random_joke, TextManager
-from lib.utils import is_admin
 
 
 async def joke_router(update, context):
@@ -72,4 +72,3 @@ async def remove_joke_action(update, text_id: str):
 
 async def error_joke_action(update):
     await update.message.reply_text("не робе")
-
