@@ -18,14 +18,14 @@ async def members_router(update, context):
     custom_names = [generate_custom_name() for _ in members]
     mention_strings = list(
         map(
-            lambda mention, names: f"[{names}]({mention}),",
+            lambda mention, names: f"[{names}]({mention})",
             mention_strings,
             custom_names,
         )
     )
     await context.bot.send_chat_action(chat_id, action=ChatAction.TYPING)
     await update.message.reply_text(
-        " ".join(mention_strings) if mention_strings else "немає кого відмічати",
+        ", ".join(mention_strings) if mention_strings else "немає кого відмічати",
         parse_mode="MarkdownV2",
     )
 
