@@ -15,7 +15,7 @@ async def all_members(update, context):
     members = MEMBER_IDS
     members_in_chat = await get_chat_members(update, members)
     mention_strings = [f"tg://user?id={member.user.id}" for member in members_in_chat if not member.status == ChatMemberStatus.LEFT]
-    custom_names = [generate_custom_name() for _ in members_in_chat]
+    custom_names = [generate_custom_name() for _ in members]
     mention_strings = list(map(lambda mention, names: f"[{names}]({mention}),", mention_strings, custom_names))
     await context.bot.send_chat_action(chat_id, action=ChatAction.TYPING)
     await update.message.reply_text(' '.join(mention_strings), parse_mode="MarkdownV2")
@@ -29,6 +29,7 @@ async def get_chat_members(update, members):
         except Exception as error:
             continue
     return members_in_chat
+
 
 custom_names = {}
 
