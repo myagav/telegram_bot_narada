@@ -58,7 +58,8 @@ def get_random_joke():
 
 
 def get_random_quote():
-    return random.choice(TextManager().quotes)
+    quote = random.choice(TextManager().quotes)
+    return quote.text
 
 
 def generate_custom_name():
